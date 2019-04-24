@@ -76,43 +76,43 @@ Suppose that the context of text file “final.txt” is:
 2.  Given the following CFG (some rules are in EBNF form):
 ```
 
-<start> àPROGRAM<pname>; VAR ,dec-list>; BEGIN <stat-list> END.
+<start> --> PROGRAM<pname>; VAR ,dec-list>; BEGIN <stat-list> END.
 
-<pname>     à <id>
+<pname>     --> <id>
 
-<id>        à <letter>{<letter>|<digit>}
+<id>        --> <letter>{<letter>|<digit>}
 
-<dec-list>  à <dec> : <type>
+<dec-list>  --> <dec> : <type>
 
-<dec>       à <id>, <dec> | <id>
-
- 
-
-<stat-list> à <stat>; | <stat>; <stat-list>
-
-<stat>      à <print> | <assign>
-
-<print>     à PRINT (<output>)
-
-<output>    à [“string”,} <id>
-
-<assign>    à <id> = <expr>
+<dec>       --> <id>, <dec> | <id>
 
  
 
-<expr>      à <term> | <expr> + <term> | <expr> - <term>
+<stat-list> --> <stat>; | <stat>; <stat-list>
 
-<term>      à <term> * <factor> | <term> / <factor> | <factor>
+<stat>      --> <print> | <assign>
 
-<factor>    à <id> | <number> | <( <expr> )
+<print>     --> PRINT (<output>)
 
-<number>    à <digit>{<digit>}
+<output>    --> [“string”,} <id>
 
-<type>      à INTEGER
+<assign>    --> <id> = <expr>
 
-<digit>     à 0|1|2|…|9
+ 
 
-<letter>    à a|b|c|d|e|f
+<expr>      --> <term> | <expr> + <term> | <expr> - <term>
+
+<term>      --> <term> * <factor> | <term> / <factor> | <factor>
+
+<factor>    --> <id> | <number> | <( <expr> )
+
+<number>    --> <digit>{<digit>}
+
+<type>      --> INTEGER
+
+<digit>     --> 0|1|2|…|9
+
+<letter>    --> a|b|c|d|e|f
 
  ```
 
