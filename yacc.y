@@ -1,9 +1,10 @@
 %{
-    void yyerror (char *s);
-    int yylex();
+    
     #include <stdio.h>
     #include <stdlib.h>
     #include <ctype.h>
+    void yyerror (char *s);
+    extern int yylex();
     int symbols[52];
     int symbolVal(char symbol);
     void updateSymbolVal(char symbol, int val);
@@ -74,19 +75,20 @@ int main (void) {
 
     int numToken, valToken;
 
-    numToken = yylex();
+    yylex();
 
 	/* init symbol table */
 	int i;
 	for(i=0; i<52; i++) {
 		symbols[i] = 0;
 	}
-
-	return yyparse ();
+    yyparse ();
+	return 0;
 }
 
 void yyerror (char *s) 
 {
+    // fprintf("Hello");
     fprintf (stderr, "%s\n", s);
     
 } 
