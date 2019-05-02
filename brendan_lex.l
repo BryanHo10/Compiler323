@@ -9,6 +9,7 @@ openparen [(]
 closeparen [)]
 colon [:]
 semicolon [;]
+singlequote [']
 assignment [=]
 letter [a-f]
 id     [a-f][a-f0-9]*
@@ -28,6 +29,7 @@ number [0-9]+
 {assignment}                                     { printf("assignment: %s found in line %d\t", yytext, c); printf("\n"); fprintf(yyout, "%s ", yytext); }
 {comment} ;
 {number}                                     { printf("number: %s found in line %d\t", yytext, c); printf("\n"); fprintf(yyout, "%s ", yytext); }
+{singlequote}                                     { printf("singlequote: %s found in line %d\t", yytext, c); printf("\n"); fprintf(yyout, "%s ", yytext); }
 
 
 
