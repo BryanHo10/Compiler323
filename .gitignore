@@ -1,4 +1,3 @@
-a.out
+compiler
 lex.yy.c
-test.h
-y.tab.*
+q2_yacc.tab.*
