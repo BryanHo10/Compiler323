@@ -3,6 +3,7 @@
 #include <string.h>
 #include "q2_yacc.tab.h"
 %}
+%option yylineno
 %%
 [0-9]+              yylval.number=atoi(yytext);return DIGIT;
 "END."              return END;
@@ -26,3 +27,9 @@ PRINT               return PRINT;
 \n                  ;
 [ \t]+              ;
 %%
+
+
+void yyerror(const char *str)
+{
+    fprintf(stderr, "Error: %s   near line: %d. Exiting.\n", str, yylineno);
+}

@@ -32,44 +32,47 @@ int main()
 %type <string> pname id dec print output
 %type <number> assign expr term factor
 
+%locations
+
 %%
 
 start: PROGRAM pname semicolon var dec_list semicolon begin stat_list end { printf("start completed\n"); }
-    |   { printf("\nerror: PROGRAM expected.  exiting.\n"); exit(1);}
+    |   { yyerror("keyword 'PROGRAM' expected."); exit(1); }
     ;
 
 pname: id  { printf("pname returning\n"); }
-    |   { printf("\nerror program name <pname> expected.  exiting.\n"); exit(1);}
+    |   { yyerror("program name <pname> expected."); exit(1); }
     ;
 
 id: IDENTIFIER { printf("id returning: [%s]\n", $1); }
     ;
 
 var: VAR   { printf("var returning\n"); }
-    |   { printf("\nerror: VAR expected.  exiting.\n"); exit(1);}
+    |   { yyerror("keyword 'VAR' expected."); exit(1); }
     ;
 
 dec_list: dec colon type    { printf("dec_list returning\n"); }
     ;
 
 dec:    IDENTIFIER comma dec    { printf("dec returning [%s]\n", $3); }
+    |   IDENTIFIER IDENTIFIER   { yyerror("two identifiers back to back without seperator. ',' expected."); exit(1); }
     |   IDENTIFIER   { printf("identifier returning [%s]\n", $1); }
     ;
 
 colon: COLON   { printf("colon returning\n"); }
-    |   { printf("\nerror no colon: ':' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("colon ':' expected."); exit(1); }
     ;
 
 semicolon: SEMICOLON   { printf("semicolon returning\n"); }
-    |   { printf("\nerror: ';' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("semicolon ';' expected."); exit(1); }
     ;
 
 type: INTEGER   { printf("integer returning\n"); }
-    |   { printf("\nerror type of INTEGER expected.  exiting.\n"); exit(1);}
+    |   { yyerror("keyword type of 'INTEGER' expected."); exit(1); }
     ;
 
 begin: BEG  { printf("BEGIN returning\n"); }
-    |   { printf("\nerror: BEGIN expected.  exiting.\n"); exit(1);}
+    |   { yyerror("keyword 'BEGIN' expected."); exit(1); }
     ;
 
 stat_list: stat semicolon   { printf("stat ; returning\n"); }
@@ -84,11 +87,11 @@ print:   PRINT oparen output cparen   { printf("print returning\n");}
     ;
 
 oparen: OPAREN { printf("open paren returning\n"); }
-    |   { printf("\nerror no open parenthesis: '(' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("open parenthesis '(' expected."); exit(1); }
     ;
 
 cparen: CPAREN { printf("close paren returning\n"); }
-    |   { printf("\nerror no closed parenthesis: ')' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("closed parenthesis ')' expected."); exit(1); }
     ;
 
 output: id  { printf("output id returning\n"); }
@@ -96,13 +99,15 @@ output: id  { printf("output id returning\n"); }
     ;
 
 comma: COMMA { printf("comma returning\n"); }
-    |   { printf("\nerror: ',' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("',' expected."); exit(1); }
     ;
 
 assign: id assignment expr { printf("assign returning $1=%s $3=%d\n",$1,$3); $$ = $3; }
+    |   { yyerror("something went wrong during assignment."); exit(1); }
     ;
 
 assignment: ASSIGNMENT { printf("assignment returning\n"); }
+    |   { yyerror("assignment operator '=' expected."); exit(1); }
     ;
 
 expr:  term         { printf("expr term returning\n"); }
@@ -124,16 +129,12 @@ number: DIGIT   { printf("number DIGIT returning\n"); }
     ;
 
 end: END { printf("END. returning\n"); }
-    |   { printf("\nerror: 'END.' expected.  exiting.\n"); exit(1);}
+    |   { yyerror("keyword 'END.' expected."); exit(1); }
     ;
 
 %%
 
 
-void yyerror(const char *str)
-{
-    fprintf(stderr, "error: %s\n",str);
-}
 
 /*
 
