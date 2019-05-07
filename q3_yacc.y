@@ -87,11 +87,17 @@ cparen: CPAREN { printf("close paren returning\n"); }
     ;
 output: id  { printf("output id returning\n"); 
             FILE *pfile = fopen("abc13.cpp", "a");
-            fprintf(pfile, "%s\n", $1);
+            fprintf(pfile, "%s", $1);
+            fprintf(pfile, ";\n");
             fclose(pfile);}
+            //#this line is supposed to be cout << 'ab5=' << ab5
     |   STRING comma id { printf("string , id returning\n"); 
                         FILE *pfile = fopen("abc13.cpp", "a");
-                        fprintf(pfile, "%s\n", $3);
+                        fprintf(pfile, "'");
+                        fprintf(pfile, "%s", $3);
+                        fprintf(pfile, "' << ");
+                        fprintf(pfile, "%s", $3);
+                        fprintf(pfile, ";\n");
                         fclose(pfile);}
     ;
 comma: COMMA { printf("comma returning\n"); }
@@ -141,15 +147,4 @@ void init()
         fprintf(pfile, "#include <iostream>\nusing namespace std;\nint main()\n{\n");
     }
     fclose(pfile);
-}
-void initialize_variable(char* var)
-{
-    for(int i = 0; i < sizeof(array_variable); i++)
-    {
-        int j = strcmp(var, array_variable[i]);
-        if(j < 1)
-        {
-            array_variable[i] = var;
-        }
-    }
 }
