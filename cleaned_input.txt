@@ -1,0 +1,12 @@
+PROGRAM aba13;
+VAR
+ab5, cb, be, eb : INTEGER;
+BEGIN 
+ab5 = 5;
+cb = 10;
+PRINT('ab5=', ab5);
+cb = 1 + 3;
+PRINT( cb );
+be = 2 * 3 + 5;
+PRINT( be );
+END.
