@@ -4,10 +4,25 @@
 #include <string.h>
 
 void yyerror(const char *str);
+void init();
 int yylex();
 int yyparse();
 int yywrap(){return 1;}
-int main(){yyparse();}
+void assign_var(char* name);
+
+int number_variables = 0;
+char *variables_array[4] = { };
+int values_array[4];
+
+
+int main()
+{
+    yyparse();
+    for(int i = 0; i < number_variables; ++i)
+    {
+        printf("\nvariable `%s` at index %d\n", variables_array[i], i);
+    }
+}
 
 %}
 
@@ -33,11 +48,15 @@ start: PROGRAM pname semicolon var dec_list semicolon begin stat_list end { prin
     |   { yyerror("keyword 'PROGRAM' expected."); exit(1); }
     ;
 
-pname: id  { printf("pname returning\n"); }
+pname: id  { printf("pname returning\n"); init(); }
     |   { yyerror("program name <pname> expected."); exit(1); }
     ;
 
-id: IDENTIFIER { printf("id returning: [%s]\n", $1); }
+id: IDENTIFIER 
+    { 
+        printf("id returning: [%s]\n", $1); 
+        assign_var($1);
+    }
     ;
 
 var: VAR   { printf("var returning\n"); }
@@ -47,9 +66,17 @@ var: VAR   { printf("var returning\n"); }
 dec_list: dec colon type    { printf("dec_list returning\n"); }
     ;
 
-dec:    IDENTIFIER comma dec    { printf("dec returning [%s]\n", $3); }
+dec:    IDENTIFIER comma dec    
+        { 
+            printf("dec returning [%s]\n", $3);
+            assign_var($3);
+        }
     |   IDENTIFIER IDENTIFIER   { yyerror("two identifiers back to back without seperator. ',' expected."); exit(1); }
-    |   IDENTIFIER   { printf("identifier returning [%s]\n", $1); }
+    |   IDENTIFIER   
+        { 
+            printf("identifier returning [%s]\n", $1); 
+            assign_var($1);
+        }
     ;
 
 colon: COLON   { printf("colon returning\n"); }
@@ -131,3 +158,40 @@ end: END { printf("END. returning\n"); }
     ;
 
 %%
+
+void init()
+{
+    FILE *pfile = fopen("abc13.cpp", "a");
+    char buffer[256];
+    if (pfile == NULL)
+    {
+        perror("Error opening file.");
+    }
+    else
+    {
+        fprintf(pfile, "#include <iostream>\n using namespace std;\n int main()\n {");
+    }
+    fclose(pfile);
+}
+
+void assign_var(char *name)
+{   
+    /*
+        The purpose of this function is to first check to see if a variable name has already been declared and add to the variables array.
+        If not, add it and increment number variables found.
+        Else, just fall through the function
+    */
+    int found = 0;
+    int i = 0;
+    while ( i < number_variables && !found)
+    {
+        if(variables_array[i] == name) { found = 1; }
+        ++i;
+    }
+
+    if(! found)
+    {
+        variables_array[number_variables++] = name;
+    }
+    
+}

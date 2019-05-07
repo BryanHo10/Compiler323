@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "q2_yacc.tab.h"
+#include "q3_yacc.tab.h"
 %}
 %option yylineno
 %%
