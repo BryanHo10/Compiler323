@@ -71,26 +71,35 @@ begin: BEG  { printf("BEGIN returning\n"); }
 stat_list: stat semicolon   { printf("stat ; returning\n"); }
     | stat semicolon stat_list  { printf("stat ; stat_list returning\n"); }
     ;
-stat:  print     { printf("stat returning\n"); }
+stat:  print     { printf("stat returning\n");}
     |  assign    { printf("assign returning value=%d\n",$1); }
     ;
 print:   PRINT oparen output cparen   { printf("print returning\n");}
     ;
-oparen: OPAREN { printf("open paren returning\n"); }
+oparen: OPAREN { printf("open paren returning\n"); 
+                FILE *pfile = fopen("abc13.cpp", "a");
+                fprintf(pfile, "cout << ");
+                fclose(pfile);}
     |   { yyerror("open parenthesis '(' expected."); exit(1); }
     ;
 cparen: CPAREN { printf("close paren returning\n"); }
     |   { yyerror("closed parenthesis ')' expected."); exit(1); }
     ;
-output: id  { printf("output id returning\n"); }
-    |   STRING comma id { printf("string , id returning\n"); }
+output: id  { printf("output id returning\n"); 
+            FILE *pfile = fopen("abc13.cpp", "a");
+            fprintf(pfile, "%s\n", $1);
+            fclose(pfile);}
+    |   STRING comma id { printf("string , id returning\n"); 
+                        FILE *pfile = fopen("abc13.cpp", "a");
+                        fprintf(pfile, "%s\n", $3);
+                        fclose(pfile);}
     ;
 comma: COMMA { printf("comma returning\n"); }
     |   { yyerror("',' expected."); exit(1); }
     ;
 assign: id assignment expr { printf("assign returning $1=%s $3=%d\n",$1,$3); $$ = $3;
                             FILE *pfile = fopen("abc13.cpp", "a"); fprintf(pfile, "%s=", $1);
-                            fprintf(pfile, "%d\n", $3);
+                            fprintf(pfile, "%d;\n", $3);
                             fclose(pfile);}
     |   { yyerror("something went wrong during assignment."); exit(1); }
     ;
@@ -111,7 +120,10 @@ factor: id          { printf("factor id returning\n"); }
     ;
 number: DIGIT   { printf("number DIGIT returning\n"); }
     ;
-end: END { printf("END. returning\n"); }
+end: END { printf("END. returning\n"); 
+         FILE *pfile = fopen("abc13.cpp", "a");
+         fprintf(pfile, "\n}");
+         fclose(pfile);}
     |   { yyerror("keyword 'END.' expected."); exit(1); }
     ;
 %%
