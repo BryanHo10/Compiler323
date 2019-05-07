@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 void yyerror(const char *str);
+void initialize_variable(char* var);
 void init();
 int yylex();
 int yyparse();
+char *array_variable[5];
 int yywrap()
 {
     return 1;
@@ -31,17 +33,26 @@ int main()
 start: PROGRAM pname semicolon var dec_list semicolon begin stat_list end { printf("start completed\n"); }
     |   { yyerror("keyword 'PROGRAM' expected."); exit(1); }
     ;
-pname: id  { printf("pname returning\n"); init($1); }
+pname: id  { printf("pname returning\n"); init(); }
     |   { yyerror("program name <pname> expected."); exit(1); }
     ;
 id: IDENTIFIER { printf("id returning: [%s]\n", $1); }
     ;
-var: VAR   { printf("var returning\n"); }
+var: VAR   { printf("var returning\n"); 
+            FILE *pfile = fopen("abc13.cpp", "a");
+            fprintf(pfile, "int ");
+            fclose(pfile);}
     |   { yyerror("keyword 'VAR' expected."); exit(1); }
     ;
-dec_list: dec colon type    { printf("dec_list returning\n"); }
+dec_list: dec colon type    { printf("dec_list returning\n"); FILE *pfile = fopen("abc13.cpp", "a");
+                            fprintf(pfile, "%s", $1);
+                            fprintf(pfile, ";\n");
+                            fclose(pfile);}
     ;
-dec:    IDENTIFIER comma dec    { printf("dec returning [%s]\n", $3); }
+dec:    IDENTIFIER comma dec    { printf("dec returning [%s]\n", $3);
+                                FILE *pfile = fopen("abc13.cpp", "a");
+                                fprintf(pfile, "%s, ", $3);
+                                fclose(pfile);}
     |   IDENTIFIER IDENTIFIER   { yyerror("two identifiers back to back without seperator. ',' expected."); exit(1); }
     |   IDENTIFIER   { printf("identifier returning [%s]\n", $1); }
     ;
@@ -77,7 +88,10 @@ output: id  { printf("output id returning\n"); }
 comma: COMMA { printf("comma returning\n"); }
     |   { yyerror("',' expected."); exit(1); }
     ;
-assign: id assignment expr { printf("assign returning $1=%s $3=%d\n",$1,$3); $$ = $3; }
+assign: id assignment expr { printf("assign returning $1=%s $3=%d\n",$1,$3); $$ = $3;
+                            FILE *pfile = fopen("abc13.cpp", "a"); fprintf(pfile, "%s=", $1);
+                            fprintf(pfile, "%d\n", $3);
+                            fclose(pfile);}
     |   { yyerror("something went wrong during assignment."); exit(1); }
     ;
 assignment: ASSIGNMENT { printf("assignment returning\n"); }
@@ -112,7 +126,18 @@ void init()
     }
     else
     {
-        fprintf(pfile, "#include <iostream>\n Using namespace std;\n int main()\n {");
+        fprintf(pfile, "#include <iostream>\nusing namespace std;\nint main()\n{\n");
     }
     fclose(pfile);
+}
+void initialize_variable(char* var)
+{
+    for(int i = 0; i < sizeof(array_variable); i++)
+    {
+        int j = strcmp(var, array_variable[i]);
+        if(j < 1)
+        {
+            array_variable[i] = var;
+        }
+    }
 }
