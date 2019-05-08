@@ -7,7 +7,7 @@ cb=10;
 cout << "ab5" << 5;
 eb=15;
 cout << "eb" << 15;
-be=15;
-cout << "be" << 15;
+be=25;
+cout << "be" << 25;
 return 0;
 }
