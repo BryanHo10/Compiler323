@@ -93,9 +93,9 @@ output: id  { printf("output id returning\n");
             //#this line is supposed to be cout << 'ab5=' << ab5
     |   STRING comma id { printf("string , id returning\n"); 
                         FILE *pfile = fopen("abc13.cpp", "a");
-                        fprintf(pfile, "'");
+                        fprintf(pfile, "\"");
                         fprintf(pfile, "%s", $3);
-                        fprintf(pfile, "' << ");
+                        fprintf(pfile, "\" << ");
                         fprintf(pfile, "%s", $3);
                         fprintf(pfile, ";\n");
                         fclose(pfile);}
@@ -128,7 +128,7 @@ number: DIGIT   { printf("number DIGIT returning\n"); }
     ;
 end: END { printf("END. returning\n"); 
          FILE *pfile = fopen("abc13.cpp", "a");
-         fprintf(pfile, "\n}");
+         fprintf(pfile, "return 0;\n}");
          fclose(pfile);}
     |   { yyerror("keyword 'END.' expected."); exit(1); }
     ;
