@@ -129,9 +129,6 @@ stat:  print     { printf("stat returning\n"); }
 
 print:   PRINT oparen output cparen
         { 
-            //  we need to know which reduction is coming from output
-            // if it is just 'id' then the following works
-            // but if it returns string comma id, we need to separate the string from the id
             printf("### print returning: PRINT (%s) ###\n", $3);
             print_vars_loop();
             int value = lookup_variable_value($3);
