@@ -41,12 +41,20 @@ int main()
 {
     int number;
     char *string;
+
+    struct output_struct {
+        char *id;
+        char *print_string;
+    } output_struct;
 }
 
 %token <number> DIGIT
-%token <string> LETTER IDENTIFIER STRING
-%type <string> pname id dec output
+%token <string> LETTER IDENTIFIER
+%token <output_struct.print_string> STRING
+%type <string> pname id dec
 %type <number> assign expr term factor print
+%type <output_struct> output
+// %type <output_struct.print_string> STRING
 
 %locations
 
@@ -70,7 +78,7 @@ var: VAR
     { 
         printf("var returning\n");
         FILE *pfile = fopen("abc13.cpp", "a");
-        fprintf(pfile, "int ");
+        fprintf(pfile, "\tint ");
         fclose(pfile); 
     }
     |   { yyerror("keyword 'VAR' expected."); exit(1); }
@@ -129,12 +137,13 @@ stat:  print     { printf("stat returning\n"); }
 
 print:   PRINT oparen output cparen
         { 
-            printf("### print returning: PRINT (%s) ###\n", $3);
+            struct output_struct os = $3;
+            printf("### print returning: PRINT (%s) ###\n", os.id);
             print_vars_loop();
-            int value = lookup_variable_value($3);
+            int value = lookup_variable_value(os.id);
             printf("print returning: PRINT (%d)\n", value);
             FILE *pfile = fopen("abc13.cpp", "a");
-            fprintf(pfile, "cout << \"%s\" << %d;\n",$3, value);
+            fprintf(pfile, "\tcout << \"%s\" << %d;\n", (strcmp(os.print_string, "") == 0) ? os.id : os.print_string,  value);
             fclose(pfile);
             $$ = value;
         }
@@ -148,8 +157,23 @@ cparen: CPAREN { printf("close paren returning\n"); }
     |   { yyerror("closed parenthesis ')' expected."); exit(1); }
     ;
 
-output: id  { printf("output id returning\n"); $$ = $1; }
-    |   STRING comma id { printf("string , id returning\n"); $$ = $3; }
+output: id  { 
+                printf("output id returning\n");
+                struct output_struct os;
+                os.id = $1;
+                os.print_string = "";
+                $$ = os; 
+            }
+    |   STRING comma id 
+            { 
+                printf("string , id returning\n");
+                struct output_struct os;
+                os.id = $3;
+                os.print_string = $1;
+                printf("output_struct.id = %s\n",os.id);
+                printf("output_struct.print_string = %s\n", os.print_string);
+                $$ = os; 
+            }
     ;
 
 comma: COMMA { printf("comma returning\n"); }
@@ -161,7 +185,7 @@ assign: id assignment expr
             printf("assign returning $1=%s $3=%d\n",$1,$3); 
             assign_value_to_var($1, $3);
             FILE *pfile = fopen("abc13.cpp", "a"); 
-            fprintf(pfile, "%s=%d;\n", $1,$3);
+            fprintf(pfile, "\t%s=%d;\n", $1,$3);
             fclose(pfile);
             $$ = $3; 
         }
@@ -213,7 +237,7 @@ end: END
     { 
         printf("END. returning\n");
         FILE *pfile = fopen("abc13.cpp", "a");
-        fprintf(pfile, "return 0;\n}");
+        fprintf(pfile, "\treturn 0;\n}");
         fclose(pfile);
     }
     |   { yyerror("keyword 'END.' expected."); exit(1); }
@@ -231,7 +255,7 @@ void init()
     }
     else
     {
-        fprintf(pfile, "#include <iostream>\n using namespace std;\n int main()\n {");
+        fprintf(pfile, "#include <iostream>\nusing namespace std;\nint main()\n{\n");
     }
     fclose(pfile);
 }
